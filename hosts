@@ -1,0 +1,1 @@
+qemuchroot ansible_host=/BASE ansible_connection=chroot ansible_chroot_disable_root_check=true

@@ -1,0 +1,110 @@
+---
+# tasks file for base
+- name: Create download directory
+  file:
+    path: "{{ download_path }}"
+    state: directory
+
+- name: Check if Gentoo Stage 3 tarball exists
+  ansible.builtin.stat:
+    path: "{{ download_path }}/{{ stage_file_name }}"
+  register: stage3_tarball
+
+- name: Download Gentoo Stage 3 tarball
+  get_url:
+    url: "{{ gentoo_stage3_url }}"
+    dest: "{{ download_path }}/{{ stage_file_name }}"
+    timeout: 60
+  when: not stage3_tarball.stat.exists
+
+- name: Check if Gentoo Stage 3 checksum file exists
+  ansible.builtin.stat:
+    path: "{{ download_path }}/stage3.DIGESTS"
+  register: stage3_digest
+
+- name: Download Gentoo Stage 3 checksum file
+  get_url:
+    url: "{{ gentoo_checksum_url }}"
+    dest: "{{ download_path }}/stage3.DIGESTS"
+    timeout: 60
+  when: not stage3_digest.stat.exists
+
+- name: Verify SHA512 checksum
+  shell: |
+    cd "{{ download_path }}" && \
+    grep -A 1 'SHA512 HASH' stage3.DIGESTS | \
+    grep '{{ stage_file_name }}' | \
+    grep -v 'CONTENT' | \
+    sha512sum -c
+  register: checksum_result
+  failed_when: checksum_result.rc != 0
+
+- name: Output verification result
+  debug:
+    msg: "Checksum verification passed"
+  when: checksum_result is succeeded
+
+- name: Check if extraction marker file exists
+  ansible.builtin.stat:
+    path: "{{ base_mount_point }}/extraction_complete.marker"
+  register: marker_file
+
+- name: Extract Gentoo Stage 3 tarball
+  become: yes
+  ansible.builtin.unarchive:
+    src: "{{ download_path }}/{{ stage_file_name }}"
+    dest: "{{ base_mount_point }}"
+    remote_src: yes
+    extra_opts:
+      - --strip-components=1
+  when: not marker_file.stat.exists
+
+- name: Create extraction marker file
+  ansible.builtin.file:
+    path: "{{ base_mount_point }}/extraction_complete.marker"
+    state: touch
+  become: yes
+  when: not marker_file.stat.exists
+
+- name: Copy /etc/resolv.conf to /mnt/gentoo/etc/
+  ansible.builtin.copy:
+    src: /etc/resolv.conf
+    dest: "{{ base_mount_point }}/etc/resolv.conf"
+    follow: yes
+
+- name: Mount /proc to BASE/proc
+  ansible.posix.mount:
+    path: "{{ base_mount_point }}/proc"
+    src: /proc
+    fstype: proc
+    state: mounted
+
+- name: Mount /sys to BASE/sys
+  ansible.builtin.command:
+    cmd: "mount --rbind /sys {{ base_mount_point }}/sys"
+  register: sys_mount
+
+- name: Make /sys rslave
+  ansible.builtin.command:
+    cmd: "mount --make-rslave {{ base_mount_point }}/sys"
+  when: sys_mount is changed
+
+- name: Mount /dev to BASE/dev
+  ansible.builtin.command:
+    cmd: "mount --rbind /dev {{ base_mount_point }}/dev"
+  register: dev_mount
+
+- name: Make /dev rslave
+  ansible.builtin.command:
+    cmd: "mount --make-rslave {{ base_mount_point }}/dev"
+  when: dev_mount is changed
+
+- name: Mount /run to BASE/run
+  ansible.builtin.command:
+    cmd: "mount --bind /run {{ base_mount_point }}/run"
+  register: run_mount
+
+- name: Make /run slave
+  ansible.builtin.command:
+    cmd: "mount --make-slave {{ base_mount_point }}/run"
+  when: run_mount is changed

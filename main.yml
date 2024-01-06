@@ -7,3 +7,16 @@
       tags: qemu
     - role: base
       tags: qemu
+
+- hosts: qemuchroot
+  connection: community.general.chroot
+  # become_user: root
+  # become: yes
+  roles:
+    - role: packages
+      tags: qemu
+
+  # tasks:
+  #   - name: Run a command inside the chroot
+  #     shell: "echo test123 > /test.txt"
+  #     tags: qemu
