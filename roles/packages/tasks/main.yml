@@ -73,6 +73,14 @@
       sys-apps/systemd-utils boot kernel-install
       sys-apps/util-linux caps
 
+      dev-python/PyQt5 gui widgets
+      dev-qt/qtwidgets X gtk dbus png
+
+      app-admin/setools -X
+      dev-python/PyQt5 -bluetooth
+      sys-libs/libselinux python
+      sys-process/audit python
+
     mode: 0644
   become: yes
 
@@ -86,16 +94,7 @@
     # Add additional tasks for other Portage configuration files like package.mask, package.accept_keywords, etc.
 
 - name: Install non-graphical packages
-  block:
-    - name: Check if package is installed
-      command: "qlist -I {{ item }}"
-      register: package_check
-      failed_when: package_check.rc != 0 and package_check.rc != 1
-      changed_when: false
-    - name: Install package
-      command: "emerge --ask=n {{ item }}"
-      when: package_check.rc == 1
-  command: emerge --ask=n {{ item }}
+  include_tasks: check_and_install_packages.yml
   loop:
     - acct-group/audio
     - acct-group/cdrom

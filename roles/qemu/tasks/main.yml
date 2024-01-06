@@ -81,11 +81,11 @@
 
 - name: Create BASE directory
   become: yes
-  file:
+  ansible.builtin.file:
     path: "{{ base_mount_point }}"
     state: directory
-    owner: "{{ ansible_user_id }}"
     mode: '0755'
+
 
 - name: Mount partition 2 to BASE
   become: yes

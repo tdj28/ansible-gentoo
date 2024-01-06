@@ -1,0 +1,10 @@
+---
+- name: Check if package is installed
+  command: "qlist -I {{ item }}"
+  register: package_check
+  failed_when: package_check.rc != 0 and package_check.rc != 1
+  changed_when: false
+
+- name: Install package
+  command: "emerge --ask=n {{ item }}"
+  when: package_check.rc == 1
