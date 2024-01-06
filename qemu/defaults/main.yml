@@ -1,0 +1,4 @@
+---
+# defaults file for qemu
+disk_image: "../base.qcow2"
+disk_size: "30G"

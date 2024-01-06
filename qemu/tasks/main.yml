@@ -1,0 +1,111 @@
+---
+- name: Check if the disk image already exists
+  ansible.builtin.stat:
+    path: "../base.qcow2"
+  register: disk_image
+
+- name: Create the disk image
+  command: qemu-img create -f qcow2 {{ disk_image }} {{ disk_size }}
+  when: not disk_image.stat.exists
+
+- name: Load nbd kernel module
+  modprobe:
+    name: nbd
+    state: present
+    params: max_part=8
+  become: yes
+
+- name: Check if /dev/nbd0 is already connected
+  command: lsblk -n -o NAME /dev/nbd0
+  register: nbd_check
+  failed_when: nbd_check.rc > 1  # Ignore error if /dev/nbd0 is not found (rc = 1)
+
+- name: Connect disk image to /dev/nbd0
+  command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
+  when: nbd_check.rc == 1  # Only run if /dev/nbd0 is not found in lsblk
+  become: yes
+
+- name: Create partitions
+  become: yes
+  parted:
+    device: /dev/nbd0
+    number: 1
+    label: msdos
+    unit: MiB
+    part_start: 1MiB
+    part_end: 512MiB
+    part_type: primary
+    state: present
+  register: part1
+
+- name: Create extended partition
+  become: yes
+  parted:
+    device: /dev/nbd0
+    number: 2
+    unit: MiB
+    part_start: 512MiB
+    part_end: -2GiB
+    part_type: primary
+    state: present
+  register: part2
+
+- name: Create swap partition
+  become: yes
+  parted:
+    device: /dev/nbd0
+    number: 3
+    unit: MiB
+    part_start: -2GiB
+    part_end: 100%
+    part_type: primary
+    flags: [swap]
+    state: present
+  register: part3
+
+- name: Format partition 1 as ext4
+  become: yes
+  filesystem:
+    fstype: ext4
+    dev: /dev/nbd0p1
+
+- name: Format partition 2 as ext4
+  become: yes
+  filesystem:
+    fstype: ext4
+    dev: /dev/nbd0p2
+
+- name: Setup swap
+  become: yes
+  command: mkswap /dev/nbd0p3
+
+- name: Create BASE directory
+  become: yes
+  file:
+    path: "{{ base_mount_point }}"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0755'
+
+- name: Mount partition 2 to BASE
+  become: yes
+  mount:
+    path: "{{ base_mount_point }}"
+    src: /dev/nbd0p2
+    fstype: ext4
+    state: mounted
+
+- name: Create boot directory in BASE
+  become: yes
+  file:
+    path: "{{ base_mount_point }}/boot"
+    state: directory
+    mode: '0755'
+
+- name: Mount partition 1 to BASE/boot
+  become: yes
+  mount:
+    path: "{{ base_mount_point }}/boot"
+    src: /dev/nbd0p1
+    fstype: ext4
+    state: mounted

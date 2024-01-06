@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  vars:
+    base_mount_point: "/BASE"
+  roles:
+    - role: qemu
+      tags: qemu
+    - role: base
+      tags: qemu
