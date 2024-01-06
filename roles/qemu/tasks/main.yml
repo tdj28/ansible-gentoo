@@ -1,12 +1,13 @@
 ---
+
 - name: Check if the disk image already exists
   ansible.builtin.stat:
-    path: "../base.qcow2"
-  register: disk_image
+    path:  "{{ disk_image }}"
+  register: disk_image_created
 
 - name: Create the disk image
   command: qemu-img create -f qcow2 {{ disk_image }} {{ disk_size }}
-  when: not disk_image.stat.exists
+  when: not disk_image_created.stat.exists
 
 - name: Load nbd kernel module
   modprobe:
@@ -15,14 +16,14 @@
     params: max_part=8
   become: yes
 
-- name: Check if /dev/nbd0 is already connected
-  command: lsblk -n -o NAME /dev/nbd0
-  register: nbd_check
-  failed_when: nbd_check.rc > 1  # Ignore error if /dev/nbd0 is not found (rc = 1)
+# - name: Check if /dev/nbd0 is already connected
+#   command: lsblk -n -o NAME /dev/nbd0
+#   register: nbd_check
+#   failed_when: nbd_check.rc > 1  # Ignore error if /dev/nbd0 is not found (rc = 1)
 
 - name: Connect disk image to /dev/nbd0
   command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
-  when: nbd_check.rc == 1  # Only run if /dev/nbd0 is not found in lsblk
+  #when: nbd_check.rc == 1  # Only run if /dev/nbd0 is not found in lsblk
   become: yes
 
 - name: Create partitions
@@ -81,11 +82,11 @@
 
 - name: Create BASE directory
   become: yes
-  ansible.builtin.file:
+  file:
     path: "{{ base_mount_point }}"
     state: directory
+    owner: "{{ ansible_user_id }}"
     mode: '0755'
-
 
 - name: Mount partition 2 to BASE
   become: yes
