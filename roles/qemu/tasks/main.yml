@@ -21,12 +21,19 @@
 #   register: nbd_check
 #   failed_when: nbd_check.rc > 1  # Ignore error if /dev/nbd0 is not found (rc = 1)
 
-- name: Connect disk image to /dev/nbd0
-  command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
-  #when: nbd_check.rc == 1  # Only run if /dev/nbd0 is not found in lsblk
+- name: Check if /dev/nbd0 is already connected
+  command: lsblk -l /dev/nbd0
+  register: nbd_check
+  failed_when: nbd_check.rc != 0 and nbd_check.rc != 1
+  changed_when: False
   become: yes
 
-- name: Create partitions
+- name: Connect disk image to /dev/nbd0
+  command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
+  when: nbd_check.rc == 1  # Run only if /dev/nbd0 is not found in lsblk
+  become: yes
+
+- name: Create efi partition
   become: yes
   parted:
     device: /dev/nbd0
@@ -36,38 +43,39 @@
     part_start: 1MiB
     part_end: 512MiB
     part_type: primary
+    flags: [boot, esp]
     state: present
   register: part1
 
-- name: Create extended partition
+- name: Create boot partition
   become: yes
   parted:
     device: /dev/nbd0
     number: 2
     unit: MiB
     part_start: 512MiB
-    part_end: -2GiB
+    part_end: 2GiB
     part_type: primary
     state: present
   register: part2
 
-- name: Create swap partition
+- name: Create primary partition
   become: yes
   parted:
     device: /dev/nbd0
     number: 3
     unit: MiB
-    part_start: -2GiB
+    part_start: 2GiB
     part_end: 100%
     part_type: primary
-    flags: [swap]
+    #flags: [swap]
     state: present
   register: part3
 
-- name: Format partition 1 as ext4
+- name: Format partition 1 as vfat
   become: yes
   filesystem:
-    fstype: ext4
+    fstype: vfat
     dev: /dev/nbd0p1
 
 - name: Format partition 2 as ext4
@@ -76,9 +84,15 @@
     fstype: ext4
     dev: /dev/nbd0p2
 
-- name: Setup swap
+- name: Format partition 3 as ext4
   become: yes
-  command: mkswap /dev/nbd0p3
+  filesystem:
+    fstype: ext4
+    dev: /dev/nbd0p3
+
+# - name: Setup swap
+#   become: yes
+#   command: mkswap /dev/nbd0p3
 
 - name: Create BASE directory
   become: yes
@@ -87,14 +101,31 @@
     state: directory
     owner: "{{ ansible_user_id }}"
     mode: '0755'
+    seuser: null
+    serole: null
 
-- name: Mount partition 2 to BASE
+- name: Mount partition 3 to BASE
   become: yes
   mount:
     path: "{{ base_mount_point }}"
-    src: /dev/nbd0p2
+    src: /dev/nbd0p3
     fstype: ext4
-    state: mounted
+    state: ephemeral
+
+- name: Create efi directory in BASE
+  become: yes
+  file:
+    path: "{{ base_mount_point }}/efi"
+    state: directory
+    mode: '0755'
+
+- name: Mount partition 1 to BASE/efi
+  become: yes
+  mount:
+    path: "{{ base_mount_point }}/efi"
+    src: /dev/nbd0p1
+    fstype: vfat
+    state: ephemeral
 
 - name: Create boot directory in BASE
   become: yes
@@ -103,10 +134,12 @@
     state: directory
     mode: '0755'
 
-- name: Mount partition 1 to BASE/boot
+- name: Mount partition 2 to BASE/boot
   become: yes
   mount:
     path: "{{ base_mount_point }}/boot"
-    src: /dev/nbd0p1
+    src: /dev/nbd0p2
     fstype: ext4
-    state: mounted
+    state: ephemeral
+
+
