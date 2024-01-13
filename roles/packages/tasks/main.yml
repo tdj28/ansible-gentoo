@@ -111,6 +111,7 @@
     - sys-kernel/gentoo-sources
     - sys-kernel/linux-firmware
     - sys-apps/pciutils
+    - sys-kernel/dracut
 
 # - name: Copy kernel configuration file
 #   copy:
@@ -140,6 +141,16 @@
   args:
     chdir: /usr/src/linux
 
+- name: Get the current kernel version
+  shell: make kernelversion
+  args:
+    chdir: /usr/src/linux
+  register: kernel_version_output
+
+- name: Set ansible_kernel variable
+  set_fact:
+    ansible_kernel: "{{ kernel_version_output.stdout }}"
+
 - name: Build and install the kernel
   shell: |
     make -j{{ ansible_processor_vcpus }} &&
@@ -147,12 +158,23 @@
     make install
   args:
     chdir: /usr/src/linux
+    creates: /boot/vmlinuz-{{ ansible_kernel }}
   become: yes
 
+# - name: Generate initial ramdisk
+#   command: genkernel --install initramfs
+#   args:
+#     chdir: /usr/src/linux
+
 - name: Generate initial ramdisk
-  command: genkernel --install initramfs
-  args:
-    chdir: /usr/src/linux
+  command:  dracut --kver={{ ansible_kernel }}
+
+- name: Install GRUB on Gentoo
+  community.general.portage:
+    package: sys-boot/grub
+    state: present
+  become: yes
+  delegate_to: "{{ inventory_hostname }}"
 
 - name: grub-install
   command: grub-install --efi-directory=/efi --target=x86_64-efi --bootloader-id=GentooAnsible
