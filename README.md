@@ -12,6 +12,12 @@ sudo ansible-playbook main.yml -i hosts --tags "qemu"
 ansible-galaxy init my_role
 ```
 
+## Trouble shooting
+
+```
+sudo qemu-nbd -d /dev/nbd0
+```
+
 ## References
 
 https://docs.ansible.com/ansible/latest/collections/community/general/chroot_connection.html
