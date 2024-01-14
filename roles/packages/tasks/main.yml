@@ -13,6 +13,11 @@
     remote_src: yes
     follow: yes
 
+- name: Resync all repositories
+  ansible.builtin.command:
+    cmd: "emaint sync --allrepos"
+  become: yes
+
 - name: Sync Portage tree
   ansible.builtin.command:
     cmd: emerge --sync --quiet
@@ -81,6 +86,11 @@
       dev-python/PyQt5 -bluetooth
       sys-libs/libselinux python
       sys-process/audit python
+
+      x11-misc/xdg-utils dbus
+      net-print/cups dbus
+      
+
 
     mode: 0644
   become: yes
@@ -194,949 +204,949 @@
     - acct-group/cron
     - acct-group/crontab
     - acct-group/dialout
-    - acct-group/disk
-    - acct-group/dnsmasq
-    - acct-group/floppy
-    - acct-group/gdm
-    - acct-group/geoclue
-    - acct-group/input
-    - acct-group/kmem
-    - acct-group/kvm
-    - acct-group/libvirt
-    - acct-group/lp
-    - acct-group/lpadmin
-    - acct-group/man
-    - acct-group/messagebus
-    - acct-group/ntp
-    - acct-group/nullmail
-    - acct-group/pipewire
-    - acct-group/plugdev
-    - acct-group/polkitd
-    - acct-group/portage
-    - acct-group/qemu
-    - acct-group/radvd
-    - acct-group/render
-    - acct-group/root
-    - acct-group/sgx
-    - acct-group/sshd
-    - acct-group/tape
-    - acct-group/tss
-    - acct-group/tty
-    - acct-group/usb
-    - acct-group/video
-    - acct-user/colord
-    - acct-user/cron
-    - acct-user/dnsmasq
-    - acct-user/gdm
-    - acct-user/geoclue
-    - acct-user/man
-    - acct-user/messagebus
-    - acct-user/ntp
-    - acct-user/nullmail
-    - acct-user/polkitd
-    - acct-user/portage
-    - acct-user/qemu
-    - acct-user/radvd
-    - acct-user/sshd
-    - acct-user/tss
-    - app-accessibility/at-spi2-core
-    - app-admin/ansible
-    - app-admin/ansible-core
-    - app-admin/eselect
-    - app-admin/haskell-updater
-    - app-admin/openrc-settingsd
-    - app-admin/perl-cleaner
-    - app-admin/sudo
-    - app-admin/sysklogd
-    - app-admin/system-config-printer
-    - app-alternatives/awk
-    - app-alternatives/bc
-    - app-alternatives/bzip2
-    - app-alternatives/cpio
-    - app-alternatives/gzip
-    - app-alternatives/lex
-    - app-alternatives/ninja
-    - app-alternatives/sh
-    - app-alternatives/tar
-    - app-alternatives/yacc
-    - app-arch/brotli
-    - app-arch/bzip2
-    - app-arch/cpio
-    - app-arch/file-roller
-    - app-arch/gnome-autoar
-    - app-arch/gzip
-    - app-arch/libarchive
-    - app-arch/ncompress
-    - app-arch/pax
-    - app-arch/tar
-    - app-arch/unzip
-    - app-arch/xz-utils
-    - app-arch/zip
-    - app-arch/zstd
-    - app-cdr/cdrtools
-    - app-crypt/argon2
-    - app-crypt/gcr
-    - app-crypt/gcr
-    - app-crypt/gnupg
-    - app-crypt/gpgme
-    - app-crypt/libb2
-    - app-crypt/libmd
-    - app-crypt/libsecret
-    - app-crypt/mit-krb5
-    - app-crypt/p11-kit
-    - app-crypt/pinentry
-    - app-crypt/rhash
-    - app-crypt/seahorse
-    - app-crypt/swtpm
-    - app-editors/gnome-text-editor
-    - app-editors/gvim
-    - app-editors/vim-core
-    - app-editors/vscode
-    - app-emulation/libvirt
-    - app-emulation/libvirt-glib
-    - app-emulation/qemu
-    - app-emulation/spice-protocol
-    - app-emulation/virt-manager
-    - app-eselect/eselect-cdparanoia
-    - app-eselect/eselect-fontconfig
-    - app-eselect/eselect-gnome-shell-extensions
-    - app-eselect/eselect-iptables
-    - app-eselect/eselect-lib-bin-symlink
-    - app-eselect/eselect-lua
-    - app-eselect/eselect-mpg123
-    - app-eselect/eselect-notify-send
-    - app-eselect/eselect-pinentry
-    - app-eselect/eselect-ruby
-    - app-eselect/eselect-rust
-    - app-eselect/eselect-vi
-    - app-i18n/enca
-    - app-i18n/ibus
-    - app-i18n/uchardet
-    - app-i18n/unicode-cldr
-    - app-i18n/unicode-data
-    - app-i18n/unicode-emoji
-    - app-misc/ca-certificates
-    - app-misc/editor-wrapper
-    - app-misc/geoclue
-    - app-misc/mime-types
-    - app-misc/pax-utils
-    - app-misc/scrub
-    - app-misc/tracker
-    - app-misc/tracker-miners
-    - app-portage/elt-patches
-    - app-portage/gemato
-    - app-portage/getuto
-    - app-portage/pfl
-    - app-portage/portage-utils
-    - app-shells/bash
-    - app-shells/bash-completion
-    - app-shells/gentoo-bashcomp
-    - app-text/asciidoc
-    - app-text/build-docbook-catalog
-    - app-text/cmark
-    - app-text/docbook-dsssl-stylesheets
-    - app-text/docbook-sgml-dtd
-    - app-text/docbook-sgml-dtd
-    - app-text/docbook-sgml-dtd
-    - app-text/docbook-sgml-dtd
-    - app-text/docbook-sgml-dtd
-    - app-text/docbook-sgml-dtd
-    - app-text/docbook-sgml-utils
-    - app-text/docbook-xml-dtd
-    - app-text/docbook-xml-dtd
-    - app-text/docbook-xml-dtd
-    - app-text/docbook-xml-dtd
-    - app-text/docbook-xml-dtd
-    - app-text/docbook-xml-simple-dtd
-    - app-text/docbook-xml-simple-dtd
-    - app-text/docbook-xsl-ns-stylesheets
-    - app-text/docbook-xsl-stylesheets
-    - app-text/dos2unix
-    - app-text/editorconfig-core-c
-    - app-text/enchant
-    - app-text/evince
-    - app-text/ghostscript-gpl
-    - app-text/gspell
-    - app-text/hunspell
-    - app-text/iso-codes
-    - app-text/libpaper
-    - app-text/mandoc
-    - app-text/manpager
-    - app-text/mupdf
-    - app-text/openjade
-    - app-text/opensp
-    - app-text/po4a
-    - app-text/poppler
-    - app-text/poppler-data
-    - app-text/qpdf
-    - app-text/sgml-common
-    - app-text/xhtml1
-    - app-text/xmlto
-    - app-text/yelp-tools
-    - app-vim/gentoo-syntax
-    - dev-cpp/atkmm
-    - dev-cpp/cairomm
-    - dev-cpp/glibmm
-    - dev-cpp/gtkmm
-    - dev-cpp/pangomm
-    - dev-db/lmdb
-    - dev-db/sqlite
-    - dev-go/go-bindata
-    - dev-haskell/alex
-    - dev-haskell/alsa-core
-    - dev-haskell/alsa-mixer
-    - dev-haskell/c2hs
-    - dev-haskell/cabal
-    - dev-haskell/dlist
-    - dev-haskell/extensible-exceptions
-    - dev-haskell/happy
-    - dev-haskell/language-c
-    - dev-haskell/mtl
-    - dev-haskell/syb
-    - dev-lang/duktape
-    - dev-lang/ghc
-    - dev-lang/go
-    - dev-lang/go-bootstrap
-    - dev-lang/lua
-    - dev-lang/mujs
-    - dev-lang/nasm
-    - dev-lang/orc
-    - dev-lang/perl
-    - dev-lang/python
-    - dev-lang/python
-    - dev-lang/python-exec
-    - dev-lang/python-exec-conf
-    - dev-lang/ruby
-    - dev-lang/rust-bin
-    - dev-lang/spidermonkey
-    - dev-lang/tcl
-    - dev-lang/vala
-    - dev-lang/yasm
-    - dev-libs/appstream-glib
-    - dev-libs/atk
-    - dev-libs/boehm-gc
-    - dev-libs/boost
-    - dev-libs/dbus-glib
-    - dev-libs/double-conversion
-    - dev-libs/elfutils
-    - dev-libs/ell
-    - dev-libs/expat
-    - dev-libs/folks
-    - dev-libs/fribidi
-    - dev-libs/gjs
-    - dev-libs/glib
-    - dev-libs/gmp
-    - dev-libs/gobject-introspection
-    - dev-libs/gobject-introspection-common
-    - dev-libs/gom
-    - dev-libs/gumbo
-    - dev-libs/hyphen
-    - dev-libs/icu
-    - dev-libs/jansson
-    - dev-libs/json-c
-    - dev-libs/json-glib
-    - dev-libs/jsoncpp
-    - dev-libs/libaio
-    - dev-libs/libassuan
-    - dev-libs/libatasmart
-    - dev-libs/libatomic_ops
-    - dev-libs/libbsd
-    - dev-libs/libbytesize
-    - dev-libs/libcdio
-    - dev-libs/libcdio-paranoia
-    - dev-libs/libclc
-    - dev-libs/libdaemon
-    - dev-libs/libedit
-    - dev-libs/libei
-    - dev-libs/libev
-    - dev-libs/libevdev
-    - dev-libs/libevent
-    - dev-libs/libffi
-    - dev-libs/libgcrypt
-    - dev-libs/libgee
-    - dev-libs/libgnome-games-support
-    - dev-libs/libgpg-error
-    - dev-libs/libgudev
-    - dev-libs/libgusb
-    - dev-libs/libgweather
-    - dev-libs/libical
-    - dev-libs/libinput
-    - dev-libs/libksba
-    - dev-libs/libltdl
-    - dev-libs/libmanette
-    - dev-libs/libnatspec
-    - dev-libs/libnl
-    - dev-libs/libpcre
-    - dev-libs/libpcre2
-    - dev-libs/libpeas
-    - dev-libs/libpipeline
-    - dev-libs/libportal
-    - dev-libs/libpwquality
-    - dev-libs/libsigc++
-    - dev-libs/libsodium
-    - dev-libs/libtasn1
-    - dev-libs/libtpms
-    - dev-libs/libunistring
-    - dev-libs/libusb
-    - dev-libs/libuv
-    - dev-libs/libverto
-    - dev-libs/libxml2
-    - dev-libs/libxslt
-    - dev-libs/libyaml
-    - dev-libs/lzo
-    - dev-libs/mpc
-    - dev-libs/mpfr
-    - dev-libs/nettle
-    - dev-libs/newt
-    - dev-libs/npth
-    - dev-libs/nspr
-    - dev-libs/nss
-    - dev-libs/openssl
-    - dev-libs/popt
-    - dev-libs/qqwing
-    - dev-libs/totem-pl-parser
-    - dev-libs/uthash
-    - dev-libs/vala-common
-    - dev-libs/wayland
-    - dev-libs/wayland-protocols
-    - dev-libs/yajl
-    - dev-perl/Authen-SASL
-    - dev-perl/Canary-Stability
-    - dev-perl/Clone
-    - dev-perl/Devel-CheckLib
-    - dev-perl/Digest-HMAC
-    - dev-perl/Encode-Locale
-    - dev-perl/Error
-    - dev-perl/File-BaseDir
-    - dev-perl/File-DesktopEntry
-    - dev-perl/File-Listing
-    - dev-perl/File-MimeInfo
-    - dev-perl/HTML-Parser
-    - dev-perl/HTML-Tagset
-    - dev-perl/HTTP-CookieJar
-    - dev-perl/HTTP-Cookies
-    - dev-perl/HTTP-Date
-    - dev-perl/HTTP-Message
-    - dev-perl/HTTP-Negotiate
-    - dev-perl/IO-HTML
-    - dev-perl/IO-Socket-INET6
-    - dev-perl/IO-Socket-SSL
-    - dev-perl/IPC-System-Simple
-    - dev-perl/JSON
-    - dev-perl/JSON-XS
-    - dev-perl/LWP-MediaTypes
-    - dev-perl/LWP-Protocol-https
-    - dev-perl/Locale-gettext
-    - dev-perl/MIME-Charset
-    - dev-perl/MailTools
-    - dev-perl/Module-Build
-    - dev-perl/Mozilla-CA
-    - dev-perl/Mozilla-PublicSuffix
-    - dev-perl/Net-DBus
-    - dev-perl/Net-HTTP
-    - dev-perl/Net-SSLeay
-    - dev-perl/Parse-Yapp
-    - dev-perl/Pod-Parser
-    - dev-perl/Regexp-IPv6
-    - dev-perl/SGMLSpm
-    - dev-perl/Socket6
-    - dev-perl/Sub-Name
-    - dev-perl/TermReadKey
-    - dev-perl/Text-CSV
-    - dev-perl/Text-CSV_XS
-    - dev-perl/Text-CharWidth
-    - dev-perl/Text-Iconv
-    - dev-perl/Text-WrapI18N
-    - dev-perl/Tie-IxHash
-    - dev-perl/TimeDate
-    - dev-perl/Try-Tiny
-    - dev-perl/Types-Serialiser
-    - dev-perl/URI
-    - dev-perl/Unicode-LineBreak
-    - dev-perl/WWW-RobotRules
-    - dev-perl/X11-Protocol
-    - dev-perl/XML-Parser
-    - dev-perl/XML-Twig
-    - dev-perl/XML-XPath
-    - dev-perl/YAML-Tiny
-    - dev-perl/common-sense
-    - dev-perl/libwww-perl
-    - dev-python/Babel
-    - dev-python/PySocks
-    - dev-python/alabaster
-    - dev-python/argcomplete
-    - dev-python/attrs
-    - dev-python/bcrypt
-    - dev-python/certifi
-    - dev-python/cffi
-    - dev-python/charset-normalizer
-    - dev-python/cryptography
-    - dev-python/cython
-    - dev-python/dbus-python
-    - dev-python/docutils
-    - dev-python/editables
-    - dev-python/ensurepip-pip
-    - dev-python/ensurepip-setuptools
-    - dev-python/ensurepip-wheels
-    - dev-python/flit-core
-    - dev-python/gentoo-common
-    - dev-python/gpep517
-    - dev-python/hatch-fancy-pypi-readme
-    - dev-python/hatch-vcs
-    - dev-python/hatchling
-    - dev-python/httplib2
-    - dev-python/idna
-    - dev-python/imagesize
-    - dev-python/installer
-    - dev-python/jaraco-context
-    - dev-python/jaraco-functools
-    - dev-python/jaraco-text
-    - dev-python/jinja
-    - dev-python/libvirt-python
-    - dev-python/lxml
-    - dev-python/mako
-    - dev-python/markupsafe
-    - dev-python/more-itertools
-    - dev-python/netaddr
-    - dev-python/nspektr
-    - dev-python/ordered-set
-    - dev-python/packaging
-    - dev-python/paramiko
-    - dev-python/pathspec
-    - dev-python/pexpect
-    - dev-python/platformdirs
-    - dev-python/pluggy
-    - dev-python/ply
-    - dev-python/ptyprocess
-    - dev-python/pyasn1
-    - dev-python/pycairo
-    - dev-python/pycparser
-    - dev-python/pycups
-    - dev-python/pyelftools
-    - dev-python/pygments
-    - dev-python/pygobject
-    - dev-python/pynacl
-    - dev-python/pyparsing
-    - dev-python/pyyaml
-    - dev-python/requests
-    - dev-python/resolvelib
-    - dev-python/semantic-version
-    - dev-python/setuptools
-    - dev-python/setuptools-rust
-    - dev-python/setuptools-scm
-    - dev-python/six
-    - dev-python/snowballstemmer
-    - dev-python/sphinx
-    - dev-python/sphinxcontrib-applehelp
-    - dev-python/sphinxcontrib-devhelp
-    - dev-python/sphinxcontrib-htmlhelp
-    - dev-python/sphinxcontrib-jsmath
-    - dev-python/sphinxcontrib-qthelp
-    - dev-python/sphinxcontrib-serializinghtml
-    - dev-python/termcolor
-    - dev-python/tomli
-    - dev-python/trove-classifiers
-    - dev-python/typing-extensions
-    - dev-python/urllib3
-    - dev-python/wheel
-    - dev-qt/qtcore
-    - dev-ruby/bundler
-    - dev-ruby/did_you_mean
-    - dev-ruby/json
-    - dev-ruby/kpeg
-    - dev-ruby/minitest
-    - dev-ruby/power_assert
-    - dev-ruby/psych
-    - dev-ruby/racc
-    - dev-ruby/rake
-    - dev-ruby/rbs
-    - dev-ruby/rdoc
-    - dev-ruby/rexml
-    - dev-ruby/rss
-    - dev-ruby/rubygems
-    - dev-ruby/stringio
-    - dev-ruby/test-unit
-    - dev-ruby/typeprof
-    - dev-util/b2
-    - dev-util/cbindgen
-    - dev-util/cmake
-    - dev-util/colm
-    - dev-util/desktop-file-utils
-    - dev-util/gdbus-codegen
-    - dev-util/glib-utils
-    - dev-util/glslang
-    - dev-util/gperf
-    - dev-util/gtk-doc
-    - dev-util/gtk-doc-am
-    - dev-util/gtk-update-icon-cache
-    - dev-util/intltool
-    - dev-util/itstool
-    - dev-util/meson
-    - dev-util/meson-format-array
-    - dev-util/ninja
-    - dev-util/pkgconf
-    - dev-util/ragel
-    - dev-util/re2c
-    - dev-util/spirv-headers
-    - dev-util/spirv-llvm-translator
-    - dev-util/spirv-tools
-    - dev-util/sysprof
-    - dev-util/sysprof-capture
-    - dev-util/sysprof-capture
-    - dev-util/sysprof-common
-    - dev-util/unifdef
-    - dev-util/vulkan-headers
-    - dev-util/wayland-scanner
-    - dev-vcs/git
-    - games-arcade/gnome-nibbles
-    - games-arcade/gnome-robots
-    - games-board/four-in-a-row
-    - games-board/gnome-chess
-    - games-board/gnome-mahjongg
-    - games-board/gnome-mines
-    - games-board/iagno
-    - games-board/tali
-    - games-puzzle/five-or-more
-    - games-puzzle/gnome-klotski
-    - games-puzzle/gnome-sudoku
-    - games-puzzle/gnome-taquin
-    - games-puzzle/gnome-tetravex
-    - games-puzzle/hitori
-    - games-puzzle/lightsoff
-    - games-puzzle/quadrapassel
-    - games-puzzle/swell-foop
-    - gui-libs/display-manager-init
-    - gui-libs/egl-gbm
-    - gui-libs/egl-wayland
-    - gui-libs/eglexternalplatform
-    - gui-libs/gdk-pixbuf-loader-webp
-    - gui-libs/gtk
-    - gui-libs/gtksourceview
-    - gui-libs/libadwaita
-    - gui-libs/libhandy
-    - gui-libs/libwpe
-    - gui-libs/vte-common
-    - gui-libs/wpebackend-fdo
-    - mail-client/evolution
-    - mail-filter/bogofilter
-    - mail-mta/nullmailer
-    - media-fonts/cantarell
-    - media-fonts/encodings
-    - media-fonts/font-util
-    - media-fonts/liberation-fonts
-    - media-fonts/urw-fonts
-    - media-gfx/eog
-    - media-gfx/exiv2
-    - media-gfx/gnome-font-viewer
-    - media-gfx/graphite2
-    - media-gfx/qrencode
-    - media-gfx/shotwell
-    - media-libs/a52dec
-    - media-libs/alsa-lib
-    - media-libs/alsa-topology-conf
-    - media-libs/alsa-ucm-conf
-    - media-libs/clutter
-    - media-libs/clutter-gst
-    - media-libs/clutter-gtk
-    - media-libs/cogl
-    - media-libs/dav1d
-    - media-libs/faad2
-    - media-libs/fdk-aac
-    - media-libs/flac
-    - media-libs/fontconfig
-    - media-libs/freeglut
-    - media-libs/freetype
-    - media-libs/gd
-    - media-libs/gexiv2
-    - media-libs/giflib
-    - media-libs/glu
-    - media-libs/graphene
-    - media-libs/grilo
-    - media-libs/gsound
-    - media-libs/gst-plugins-bad
-    - media-libs/gst-plugins-base
-    - media-libs/gst-plugins-good
-    - media-libs/gst-plugins-ugly
-    - media-libs/gstreamer
-    - media-libs/harfbuzz
-    - media-libs/jbig2dec
-    - media-libs/lcms
-    - media-libs/libaom
-    - media-libs/libass
-    - media-libs/libcanberra
-    - media-libs/libdca
-    - media-libs/libdvdcss
-    - media-libs/libdvdnav
-    - media-libs/libdvdread
-    - media-libs/libepoxy
-    - media-libs/libexif
-    - media-libs/libfreeaptx
-    - media-libs/libglvnd
-    - media-libs/libgphoto2
-    - media-libs/libjpeg-turbo
-    - media-libs/libldac
-    - media-libs/libmad
-    - media-libs/libmediaart
-    - media-libs/libmng
-    - media-libs/libmpeg2
-    - media-libs/libogg
-    - media-libs/libpng
-    - media-libs/libpulse
-    - media-libs/libraw
-    - media-libs/libsamplerate
-    - media-libs/libsdl
-    - media-libs/libsdl2
-    - media-libs/libsndfile
-    - media-libs/libtheora
-    - media-libs/libv4l
-    - media-libs/libva
-    - media-libs/libvorbis
-    - media-libs/libvpx
-    - media-libs/libwebp
-    - media-libs/mesa
-    - media-libs/openjpeg
-    - media-libs/opus
-    - media-libs/sbc
-    - media-libs/speexdsp
-    - media-libs/taglib
-    - media-libs/tiff
-    - media-libs/vulkan-loader
-    - media-libs/webrtc-audio-processing
-    - media-libs/woff2
-    - media-libs/x264
-    - media-libs/xvid
-    - media-plugins/alsa-plugins
-    - media-plugins/grilo-plugins
-    - media-plugins/gst-plugins-a52dec
-    - media-plugins/gst-plugins-cdparanoia
-    - media-plugins/gst-plugins-dts
-    - media-plugins/gst-plugins-dvdread
-    - media-plugins/gst-plugins-faad
-    - media-plugins/gst-plugins-flac
-    - media-plugins/gst-plugins-gdkpixbuf
-    - media-plugins/gst-plugins-gtk
-    - media-plugins/gst-plugins-jpeg
-    - media-plugins/gst-plugins-meta
-    - media-plugins/gst-plugins-mpeg2dec
-    - media-plugins/gst-plugins-mpg123
-    - media-plugins/gst-plugins-opus
-    - media-plugins/gst-plugins-pulse
-    - media-plugins/gst-plugins-resindvd
-    - media-plugins/gst-plugins-taglib
-    - media-plugins/gst-plugins-v4l2
-    - media-plugins/gst-plugins-vpx
-    - media-plugins/gst-plugins-x264
-    - media-sound/alsa-utils
-    - media-sound/alsamixergui
-    - media-sound/cdparanoia
-    - media-sound/lame
-    - media-sound/mpg123
-    - media-sound/pulseaudio
-    - media-sound/pulseaudio-daemon
-    - media-video/cheese
-    - media-video/ffmpeg
-    - media-video/gnome-video-effects
-    - media-video/mplayer
-    - media-video/pipewire
-    - media-video/totem
-    - media-video/wireplumber
-    - net-analyzer/openbsd-netcat
-    - net-dialup/ppp
-    - net-dialup/ppp-scripts
-    - net-dns/c-ares
-    - net-dns/dnsmasq
-    - net-dns/libidn
-    - net-dns/libidn2
-    - net-dns/openresolv
-    - net-firewall/ebtables
-    - net-firewall/iptables
-    - net-fs/cifs-utils
-    - net-fs/samba
-    - net-libs/glib-networking
-    - net-libs/gnome-online-accounts
-    - net-libs/gnutls
-    - net-libs/gtk-vnc
-    - net-libs/libasyncns
-    - net-libs/libcloudproviders
-    - net-libs/libmbim
-    - net-libs/libmnl
-    - net-libs/libndp
-    - net-libs/libnma
-    - net-libs/libnsl
-    - net-libs/liboauth
-    - net-libs/libproxy
-    - net-libs/libpsl
-    - net-libs/libqmi
-    - net-libs/libqrtr-glib
-    - net-libs/libslirp
-    - net-libs/libsoup
-    - net-libs/libtirpc
-    - net-libs/nghttp2
-    - net-libs/nodejs
-    - net-libs/rest
-    - net-libs/rpcsvc-proto
-    - net-libs/webkit-gtk
-    - net-libs/webkit-gtk
-    - net-misc/chrony
-    - net-misc/curl
-    - net-misc/dhcpcd
-    - net-misc/ethertypes
-    - net-misc/iputils
-    - net-misc/mobile-broadband-provider-info
-    - net-misc/modemmanager
-    - net-misc/netifrc
-    - net-misc/networkmanager
-    - net-misc/openssh
-    - net-misc/radvd
-    - net-misc/rsync
-    - net-misc/spice-gtk
-    - net-misc/sshpass
-    - net-misc/wget
-    - net-print/cups
-    - net-print/cups-filters
-    - net-print/cups-pk-helper
-    - net-vpn/wireguard-tools
-    - net-wireless/bluez
-    - net-wireless/gnome-bluetooth
-    - net-wireless/iw
-    - net-wireless/wireless-regdb
-    - net-wireless/wpa_supplicant
-    - perl-core/Compress-Raw-Zlib
-    - perl-core/File-Temp
-    - perl-core/Math-BigInt
-    - sci-geosciences/geocode-glib
-    - sci-libs/gsl
-    - sec-keys/openpgp-keys-gentoo-release
-    - sys-apps/accountsservice
-    - sys-apps/acl
-    - sys-apps/attr
-    - sys-apps/baobab
-    - sys-apps/baselayout
-    - sys-apps/bubblewrap
-    - sys-apps/coreutils
-    - sys-apps/dbus
-    - sys-apps/debianutils
-    - sys-apps/diffutils
-    - sys-apps/dmidecode
-    - sys-apps/dtc
-    - sys-apps/file
-    - sys-apps/findutils
-    - sys-apps/gawk
-    - sys-apps/gentoo-functions
-    - sys-apps/gnome-disk-utility
-    - sys-apps/grep
-    - sys-apps/groff
-    - sys-apps/help2man
-    - sys-apps/hwdata
-    - sys-apps/install-xattr
-    - sys-apps/iproute2
-    - sys-apps/kbd
-    - sys-apps/keyutils
-    - sys-apps/kmod
-    - sys-apps/less
-    - sys-apps/locale-gen
-    - sys-apps/lsb-release
-    - sys-apps/man-db
-    - sys-apps/man-pages
-    - sys-apps/miscfiles
-    - sys-apps/net-tools
-    - sys-apps/openrc
-    - sys-apps/osinfo-db
-    - sys-apps/osinfo-db-tools
-    - sys-apps/pciutils
-    - sys-apps/portage
-    - sys-apps/sandbox
-    - sys-apps/sed
-    - sys-apps/shadow
-    - sys-apps/systemd-utils
-    - sys-apps/sysvinit
-    - sys-apps/texinfo
-    - sys-apps/usbredir
-    - sys-apps/usbutils
-    - sys-apps/util-linux
-    - sys-apps/which
-    - sys-apps/xdg-dbus-proxy
-    - sys-apps/xdg-desktop-portal
-    - sys-apps/xdg-desktop-portal-gnome
-    - sys-apps/xdg-desktop-portal-gtk
-    - sys-auth/elogind
-    - sys-auth/nss-myhostname
-    - sys-auth/pambase
-    - sys-auth/passwdqc
-    - sys-auth/polkit
-    - sys-block/io-scheduler-udev-rules
-    - sys-block/parted
-    - sys-boot/efibootmgr
-    - sys-boot/grub
-    - sys-cluster/minikube
-    - sys-devel/autoconf
-    - sys-devel/autoconf
-    - sys-devel/autoconf-archive
-    - sys-devel/autoconf-wrapper
-    - sys-devel/automake
-    - sys-devel/automake-wrapper
-    - sys-devel/bc
-    - sys-devel/binutils
-    - sys-devel/binutils-config
-    - sys-devel/bison
-    - sys-devel/clang
-    - sys-devel/clang-common
-    - sys-devel/clang-runtime
-    - sys-devel/clang-toolchain-symlinks
-    - sys-devel/flex
-    - sys-devel/gcc
-    - sys-devel/gcc
-    - sys-devel/gcc-config
-    - sys-devel/gettext
-    - sys-devel/gnuconfig
-    - sys-devel/libtool
-    - sys-devel/lld
-    - sys-devel/lld-toolchain-symlinks
-    - sys-devel/llvm
-    - sys-devel/llvm-common
-    - sys-devel/llvm-toolchain-symlinks
-    - sys-devel/llvmgold
-    - sys-devel/m4
-    - sys-devel/make
-    - sys-devel/patch
-    - sys-firmware/edk2-ovmf-bin
-    - sys-firmware/ipxe
-    - sys-firmware/seabios-bin
-    - sys-firmware/sgabios
-    - sys-firmware/sof-firmware
-    - sys-fs/btrfs-progs
-    - sys-fs/cryptsetup
-    - sys-fs/e2fsprogs
-    - sys-fs/fuse
-    - sys-fs/fuse-common
-    - sys-fs/lvm2
-    - sys-fs/udev-init-scripts
-    - sys-fs/udisks
-    - sys-kernel/dracut
-    - sys-kernel/genkernel
-    - sys-kernel/gentoo-kernel
-    - sys-kernel/gentoo-sources
-    - sys-kernel/installkernel-gentoo
-    - sys-kernel/linux-firmware
-    - sys-kernel/linux-headers
-    - sys-libs/binutils-libs
-    - sys-libs/compiler-rt
-    - sys-libs/compiler-rt-sanitizers
-    - sys-libs/cracklib
-    - sys-libs/efivar
-    - sys-libs/gdbm
-    - sys-libs/glibc
-    - sys-libs/gpm
-    - sys-libs/ldb
-    - sys-libs/libblockdev
-    - sys-libs/libcap
-    - sys-libs/libcap-ng
-    - sys-libs/libomp
-    - sys-libs/libosinfo
-    - sys-libs/libseccomp
-    - sys-libs/libunwind
-    - sys-libs/liburing
-    - sys-libs/libxcrypt
-    - sys-libs/mtdev
-    - sys-libs/ncurses
-    - sys-libs/pam
-    - sys-libs/readline
-    - sys-libs/slang
-    - sys-libs/talloc
-    - sys-libs/tdb
-    - sys-libs/tevent
-    - sys-libs/timezone-data
-    - sys-libs/zlib
-    - sys-power/upower
-    - sys-process/cronbase
-    - sys-process/cronie
-    - sys-process/lsof
-    - sys-process/procps
-    - sys-process/psmisc
-    - virtual/acl
-    - virtual/dev-manager
-    - virtual/dist-kernel
-    - virtual/editor
-    - virtual/freedesktop-icon-theme
-    - virtual/glu
-    - virtual/jpeg
-    - virtual/krb5
-    - virtual/libc
-    - virtual/libcrypt
-    - virtual/libelf
-    - virtual/libiconv
-    - virtual/libintl
-    - virtual/libudev
-    - virtual/libusb
-    - virtual/linux-sources
-    - virtual/logger
-    - virtual/man
-    - virtual/mta
-    - virtual/notification-daemon
-    - virtual/opengl
-    - virtual/openssh
-    - virtual/os-headers
-    - virtual/package-manager
-    - virtual/pager
-    - virtual/perl-CPAN
-    - virtual/perl-CPAN-Meta
-    - virtual/perl-CPAN-Meta-YAML
-    - virtual/perl-Carp
-    - virtual/perl-Compress-Raw-Bzip2
-    - virtual/perl-Compress-Raw-Zlib
-    - virtual/perl-Data-Dumper
-    - virtual/perl-Digest-MD5
-    - virtual/perl-Digest-SHA
-    - virtual/perl-Encode
-    - virtual/perl-Exporter
-    - virtual/perl-ExtUtils-CBuilder
-    - virtual/perl-ExtUtils-Install
-    - virtual/perl-ExtUtils-MakeMaker
-    - virtual/perl-ExtUtils-Manifest
-    - virtual/perl-ExtUtils-ParseXS
-    - virtual/perl-File-Path
-    - virtual/perl-File-Spec
-    - virtual/perl-File-Temp
-    - virtual/perl-Getopt-Long
-    - virtual/perl-IO
-    - virtual/perl-IO-Compress
-    - virtual/perl-IO-Socket-IP
-    - virtual/perl-JSON-PP
-    - virtual/perl-MIME-Base64
-    - virtual/perl-Math-BigInt
-    - virtual/perl-Math-BigInt-FastCalc
-    - virtual/perl-Math-BigRat
-    - virtual/perl-Math-Complex
-    - virtual/perl-Module-Load
-    - virtual/perl-Module-Metadata
-    - virtual/perl-Parse-CPAN-Meta
-    - virtual/perl-Perl-OSType
-    - virtual/perl-Scalar-List-Utils
-    - virtual/perl-Test-Harness
-    - virtual/perl-Text-ParseWords
-    - virtual/perl-Time-HiRes
-    - virtual/perl-Time-Local
-    - virtual/perl-Unicode-Collate
-    - virtual/perl-XSLoader
-    - virtual/perl-bignum
-    - virtual/perl-libnet
-    - virtual/perl-parent
-    - virtual/perl-podlators
-    - virtual/perl-version
-    - virtual/pkgconfig
-    - virtual/resolvconf
-    - virtual/ruby-ssl
-    - virtual/rubygems
-    - virtual/rust
-    - virtual/secret-service
-    - virtual/service-manager
-    - virtual/ssh
-    - virtual/tmpfiles
-    - virtual/ttf-fonts
-    - virtual/udev
-    - virtual/w3m
-    - www-client/epiphany
-    - www-client/firefox
-    - www-client/w3m
+    # - acct-group/disk
+    # - acct-group/dnsmasq
+    # - acct-group/floppy
+    # - acct-group/gdm
+    # - acct-group/geoclue
+    # - acct-group/input
+    # - acct-group/kmem
+    # - acct-group/kvm
+    # - acct-group/libvirt
+    # - acct-group/lp
+    # - acct-group/lpadmin
+    # - acct-group/man
+    # - acct-group/messagebus
+    # - acct-group/ntp
+    # - acct-group/nullmail
+    # - acct-group/pipewire
+    # - acct-group/plugdev
+    # - acct-group/polkitd
+    # - acct-group/portage
+    # - acct-group/qemu
+    # - acct-group/radvd
+    # - acct-group/render
+    # - acct-group/root
+    # - acct-group/sgx
+    # - acct-group/sshd
+    # - acct-group/tape
+    # - acct-group/tss
+    # - acct-group/tty
+    # - acct-group/usb
+    # - acct-group/video
+    # - acct-user/colord
+    # - acct-user/cron
+    # - acct-user/dnsmasq
+    # - acct-user/gdm
+    # - acct-user/geoclue
+    # - acct-user/man
+    # - acct-user/messagebus
+    # - acct-user/ntp
+    # - acct-user/nullmail
+    # - acct-user/polkitd
+    # - acct-user/portage
+    # - acct-user/qemu
+    # - acct-user/radvd
+    # - acct-user/sshd
+    # - acct-user/tss
+    # - app-accessibility/at-spi2-core
+    # - app-admin/ansible
+    # - app-admin/ansible-core
+    # - app-admin/eselect
+    # - app-admin/haskell-updater
+    # - app-admin/openrc-settingsd
+    # - app-admin/perl-cleaner
+    # - app-admin/sudo
+    # - app-admin/sysklogd
+    # - app-admin/system-config-printer
+    # - app-alternatives/awk
+    # - app-alternatives/bc
+    # - app-alternatives/bzip2
+    # - app-alternatives/cpio
+    # - app-alternatives/gzip
+    # - app-alternatives/lex
+    # - app-alternatives/ninja
+    # - app-alternatives/sh
+    # - app-alternatives/tar
+    # - app-alternatives/yacc
+    # - app-arch/brotli
+    # - app-arch/bzip2
+    # - app-arch/cpio
+    # - app-arch/file-roller
+    # - app-arch/gnome-autoar
+    # - app-arch/gzip
+    # - app-arch/libarchive
+    # - app-arch/ncompress
+    # - app-arch/pax
+    # - app-arch/tar
+    # - app-arch/unzip
+    # - app-arch/xz-utils
+    # - app-arch/zip
+    # - app-arch/zstd
+    # - app-cdr/cdrtools
+    # - app-crypt/argon2
+    # - app-crypt/gcr
+    # - app-crypt/gcr
+    # - app-crypt/gnupg
+    # - app-crypt/gpgme
+    # - app-crypt/libb2
+    # - app-crypt/libmd
+    # - app-crypt/libsecret
+    # - app-crypt/mit-krb5
+    # - app-crypt/p11-kit
+    # - app-crypt/pinentry
+    # - app-crypt/rhash
+    # - app-crypt/seahorse
+    # - app-crypt/swtpm
+    # - app-editors/gnome-text-editor
+    # - app-editors/gvim
+    # - app-editors/vim-core
+    # - app-editors/vscode
+    # - app-emulation/libvirt
+    # - app-emulation/libvirt-glib
+    # - app-emulation/qemu
+    # - app-emulation/spice-protocol
+    # - app-emulation/virt-manager
+    # - app-eselect/eselect-cdparanoia
+    # - app-eselect/eselect-fontconfig
+    # - app-eselect/eselect-gnome-shell-extensions
+    # - app-eselect/eselect-iptables
+    # - app-eselect/eselect-lib-bin-symlink
+    # - app-eselect/eselect-lua
+    # - app-eselect/eselect-mpg123
+    # - app-eselect/eselect-notify-send
+    # - app-eselect/eselect-pinentry
+    # - app-eselect/eselect-ruby
+    # - app-eselect/eselect-rust
+    # - app-eselect/eselect-vi
+    # - app-i18n/enca
+    # - app-i18n/ibus
+    # - app-i18n/uchardet
+    # - app-i18n/unicode-cldr
+    # - app-i18n/unicode-data
+    # - app-i18n/unicode-emoji
+    # - app-misc/ca-certificates
+    # - app-misc/editor-wrapper
+    # - app-misc/geoclue
+    # - app-misc/mime-types
+    # - app-misc/pax-utils
+    # - app-misc/scrub
+    # - app-misc/tracker
+    # - app-misc/tracker-miners
+    # - app-portage/elt-patches
+    # - app-portage/gemato
+    # - app-portage/getuto
+    # - app-portage/pfl
+    # - app-portage/portage-utils
+    # - app-shells/bash
+    # - app-shells/bash-completion
+    # - app-shells/gentoo-bashcomp
+    # - app-text/asciidoc
+    # - app-text/build-docbook-catalog
+    # - app-text/cmark
+    # - app-text/docbook-dsssl-stylesheets
+    # - app-text/docbook-sgml-dtd
+    # - app-text/docbook-sgml-dtd
+    # - app-text/docbook-sgml-dtd
+    # - app-text/docbook-sgml-dtd
+    # - app-text/docbook-sgml-dtd
+    # - app-text/docbook-sgml-dtd
+    # - app-text/docbook-sgml-utils
+    # - app-text/docbook-xml-dtd
+    # - app-text/docbook-xml-dtd
+    # - app-text/docbook-xml-dtd
+    # - app-text/docbook-xml-dtd
+    # - app-text/docbook-xml-dtd
+    # - app-text/docbook-xml-simple-dtd
+    # - app-text/docbook-xml-simple-dtd
+    # - app-text/docbook-xsl-ns-stylesheets
+    # - app-text/docbook-xsl-stylesheets
+    # - app-text/dos2unix
+    # - app-text/editorconfig-core-c
+    # - app-text/enchant
+    # - app-text/evince
+    # - app-text/ghostscript-gpl
+    # - app-text/gspell
+    # - app-text/hunspell
+    # - app-text/iso-codes
+    # - app-text/libpaper
+    # - app-text/mandoc
+    # - app-text/manpager
+    # - app-text/mupdf
+    # - app-text/openjade
+    # - app-text/opensp
+    # - app-text/po4a
+    # - app-text/poppler
+    # - app-text/poppler-data
+    # - app-text/qpdf
+    # - app-text/sgml-common
+    # - app-text/xhtml1
+    # - app-text/xmlto
+    # - app-text/yelp-tools
+    # - app-vim/gentoo-syntax
+    # - dev-cpp/atkmm
+    # - dev-cpp/cairomm
+    # - dev-cpp/glibmm
+    # - dev-cpp/gtkmm
+    # - dev-cpp/pangomm
+    # - dev-db/lmdb
+    # - dev-db/sqlite
+    # - dev-go/go-bindata
+    # - dev-haskell/alex
+    # - dev-haskell/alsa-core
+    # - dev-haskell/alsa-mixer
+    # - dev-haskell/c2hs
+    # - dev-haskell/cabal
+    # - dev-haskell/dlist
+    # - dev-haskell/extensible-exceptions
+    # - dev-haskell/happy
+    # - dev-haskell/language-c
+    # - dev-haskell/mtl
+    # - dev-haskell/syb
+    # - dev-lang/duktape
+    # - dev-lang/ghc
+    # - dev-lang/go
+    # - dev-lang/go-bootstrap
+    # - dev-lang/lua
+    # - dev-lang/mujs
+    # - dev-lang/nasm
+    # - dev-lang/orc
+    # - dev-lang/perl
+    # - dev-lang/python
+    # - dev-lang/python
+    # - dev-lang/python-exec
+    # - dev-lang/python-exec-conf
+    # - dev-lang/ruby
+    # - dev-lang/rust-bin
+    # - dev-lang/spidermonkey
+    # - dev-lang/tcl
+    # - dev-lang/vala
+    # - dev-lang/yasm
+    # - dev-libs/appstream-glib
+    # - dev-libs/atk
+    # - dev-libs/boehm-gc
+    # - dev-libs/boost
+    # - dev-libs/dbus-glib
+    # - dev-libs/double-conversion
+    # - dev-libs/elfutils
+    # - dev-libs/ell
+    # - dev-libs/expat
+    # - dev-libs/folks
+    # - dev-libs/fribidi
+    # - dev-libs/gjs
+    # - dev-libs/glib
+    # - dev-libs/gmp
+    # - dev-libs/gobject-introspection
+    # - dev-libs/gobject-introspection-common
+    # - dev-libs/gom
+    # - dev-libs/gumbo
+    # - dev-libs/hyphen
+    # - dev-libs/icu
+    # - dev-libs/jansson
+    # - dev-libs/json-c
+    # - dev-libs/json-glib
+    # - dev-libs/jsoncpp
+    # - dev-libs/libaio
+    # - dev-libs/libassuan
+    # - dev-libs/libatasmart
+    # - dev-libs/libatomic_ops
+    # - dev-libs/libbsd
+    # - dev-libs/libbytesize
+    # - dev-libs/libcdio
+    # - dev-libs/libcdio-paranoia
+    # - dev-libs/libclc
+    # - dev-libs/libdaemon
+    # - dev-libs/libedit
+    # - dev-libs/libei
+    # - dev-libs/libev
+    # - dev-libs/libevdev
+    # - dev-libs/libevent
+    # - dev-libs/libffi
+    # - dev-libs/libgcrypt
+    # - dev-libs/libgee
+    # - dev-libs/libgnome-games-support
+    # - dev-libs/libgpg-error
+    # - dev-libs/libgudev
+    # - dev-libs/libgusb
+    # - dev-libs/libgweather
+    # - dev-libs/libical
+    # - dev-libs/libinput
+    # - dev-libs/libksba
+    # - dev-libs/libltdl
+    # - dev-libs/libmanette
+    # - dev-libs/libnatspec
+    # - dev-libs/libnl
+    # - dev-libs/libpcre
+    # - dev-libs/libpcre2
+    # - dev-libs/libpeas
+    # - dev-libs/libpipeline
+    # - dev-libs/libportal
+    # - dev-libs/libpwquality
+    # - dev-libs/libsigc++
+    # - dev-libs/libsodium
+    # - dev-libs/libtasn1
+    # - dev-libs/libtpms
+    # - dev-libs/libunistring
+    # - dev-libs/libusb
+    # - dev-libs/libuv
+    # - dev-libs/libverto
+    # - dev-libs/libxml2
+    # - dev-libs/libxslt
+    # - dev-libs/libyaml
+    # - dev-libs/lzo
+    # - dev-libs/mpc
+    # - dev-libs/mpfr
+    # - dev-libs/nettle
+    # - dev-libs/newt
+    # - dev-libs/npth
+    # - dev-libs/nspr
+    # - dev-libs/nss
+    # - dev-libs/openssl
+    # - dev-libs/popt
+    # - dev-libs/qqwing
+    # - dev-libs/totem-pl-parser
+    # - dev-libs/uthash
+    # - dev-libs/vala-common
+    # - dev-libs/wayland
+    # - dev-libs/wayland-protocols
+    # - dev-libs/yajl
+    # - dev-perl/Authen-SASL
+    # - dev-perl/Canary-Stability
+    # - dev-perl/Clone
+    # - dev-perl/Devel-CheckLib
+    # - dev-perl/Digest-HMAC
+    # - dev-perl/Encode-Locale
+    # - dev-perl/Error
+    # - dev-perl/File-BaseDir
+    # - dev-perl/File-DesktopEntry
+    # - dev-perl/File-Listing
+    # - dev-perl/File-MimeInfo
+    # - dev-perl/HTML-Parser
+    # - dev-perl/HTML-Tagset
+    # - dev-perl/HTTP-CookieJar
+    # - dev-perl/HTTP-Cookies
+    # - dev-perl/HTTP-Date
+    # - dev-perl/HTTP-Message
+    # - dev-perl/HTTP-Negotiate
+    # - dev-perl/IO-HTML
+    # - dev-perl/IO-Socket-INET6
+    # - dev-perl/IO-Socket-SSL
+    # - dev-perl/IPC-System-Simple
+    # - dev-perl/JSON
+    # - dev-perl/JSON-XS
+    # - dev-perl/LWP-MediaTypes
+    # - dev-perl/LWP-Protocol-https
+    # - dev-perl/Locale-gettext
+    # - dev-perl/MIME-Charset
+    # - dev-perl/MailTools
+    # - dev-perl/Module-Build
+    # - dev-perl/Mozilla-CA
+    # - dev-perl/Mozilla-PublicSuffix
+    # - dev-perl/Net-DBus
+    # - dev-perl/Net-HTTP
+    # - dev-perl/Net-SSLeay
+    # - dev-perl/Parse-Yapp
+    # - dev-perl/Pod-Parser
+    # - dev-perl/Regexp-IPv6
+    # - dev-perl/SGMLSpm
+    # - dev-perl/Socket6
+    # - dev-perl/Sub-Name
+    # - dev-perl/TermReadKey
+    # - dev-perl/Text-CSV
+    # - dev-perl/Text-CSV_XS
+    # - dev-perl/Text-CharWidth
+    # - dev-perl/Text-Iconv
+    # - dev-perl/Text-WrapI18N
+    # - dev-perl/Tie-IxHash
+    # - dev-perl/TimeDate
+    # - dev-perl/Try-Tiny
+    # - dev-perl/Types-Serialiser
+    # - dev-perl/URI
+    # - dev-perl/Unicode-LineBreak
+    # - dev-perl/WWW-RobotRules
+    # - dev-perl/X11-Protocol
+    # - dev-perl/XML-Parser
+    # - dev-perl/XML-Twig
+    # - dev-perl/XML-XPath
+    # - dev-perl/YAML-Tiny
+    # - dev-perl/common-sense
+    # - dev-perl/libwww-perl
+    # - dev-python/Babel
+    # - dev-python/PySocks
+    # - dev-python/alabaster
+    # - dev-python/argcomplete
+    # - dev-python/attrs
+    # - dev-python/bcrypt
+    # - dev-python/certifi
+    # - dev-python/cffi
+    # - dev-python/charset-normalizer
+    # - dev-python/cryptography
+    # - dev-python/cython
+    # - dev-python/dbus-python
+    # - dev-python/docutils
+    # - dev-python/editables
+    # - dev-python/ensurepip-pip
+    # - dev-python/ensurepip-setuptools
+    # - dev-python/ensurepip-wheels
+    # - dev-python/flit-core
+    # - dev-python/gentoo-common
+    # - dev-python/gpep517
+    # - dev-python/hatch-fancy-pypi-readme
+    # - dev-python/hatch-vcs
+    # - dev-python/hatchling
+    # - dev-python/httplib2
+    # - dev-python/idna
+    # - dev-python/imagesize
+    # - dev-python/installer
+    # - dev-python/jaraco-context
+    # - dev-python/jaraco-functools
+    # - dev-python/jaraco-text
+    # - dev-python/jinja
+    # - dev-python/libvirt-python
+    # - dev-python/lxml
+    # - dev-python/mako
+    # - dev-python/markupsafe
+    # - dev-python/more-itertools
+    # - dev-python/netaddr
+    # - dev-python/nspektr
+    # - dev-python/ordered-set
+    # - dev-python/packaging
+    # - dev-python/paramiko
+    # - dev-python/pathspec
+    # - dev-python/pexpect
+    # - dev-python/platformdirs
+    # - dev-python/pluggy
+    # - dev-python/ply
+    # - dev-python/ptyprocess
+    # - dev-python/pyasn1
+    # - dev-python/pycairo
+    # - dev-python/pycparser
+    # - dev-python/pycups
+    # - dev-python/pyelftools
+    # - dev-python/pygments
+    # - dev-python/pygobject
+    # - dev-python/pynacl
+    # - dev-python/pyparsing
+    # - dev-python/pyyaml
+    # - dev-python/requests
+    # - dev-python/resolvelib
+    # - dev-python/semantic-version
+    # - dev-python/setuptools
+    # - dev-python/setuptools-rust
+    # - dev-python/setuptools-scm
+    # - dev-python/six
+    # - dev-python/snowballstemmer
+    # - dev-python/sphinx
+    # - dev-python/sphinxcontrib-applehelp
+    # - dev-python/sphinxcontrib-devhelp
+    # - dev-python/sphinxcontrib-htmlhelp
+    # - dev-python/sphinxcontrib-jsmath
+    # - dev-python/sphinxcontrib-qthelp
+    # - dev-python/sphinxcontrib-serializinghtml
+    # - dev-python/termcolor
+    # - dev-python/tomli
+    # - dev-python/trove-classifiers
+    # - dev-python/typing-extensions
+    # - dev-python/urllib3
+    # - dev-python/wheel
+    # - dev-qt/qtcore
+    # - dev-ruby/bundler
+    # - dev-ruby/did_you_mean
+    # - dev-ruby/json
+    # - dev-ruby/kpeg
+    # - dev-ruby/minitest
+    # - dev-ruby/power_assert
+    # - dev-ruby/psych
+    # - dev-ruby/racc
+    # - dev-ruby/rake
+    # - dev-ruby/rbs
+    # - dev-ruby/rdoc
+    # - dev-ruby/rexml
+    # - dev-ruby/rss
+    # - dev-ruby/rubygems
+    # - dev-ruby/stringio
+    # - dev-ruby/test-unit
+    # - dev-ruby/typeprof
+    # - dev-util/b2
+    # - dev-util/cbindgen
+    # - dev-util/cmake
+    # - dev-util/colm
+    # - dev-util/desktop-file-utils
+    # - dev-util/gdbus-codegen
+    # - dev-util/glib-utils
+    # - dev-util/glslang
+    # - dev-util/gperf
+    # - dev-util/gtk-doc
+    # - dev-util/gtk-doc-am
+    # - dev-util/gtk-update-icon-cache
+    # - dev-util/intltool
+    # - dev-util/itstool
+    # - dev-util/meson
+    # - dev-util/meson-format-array
+    # - dev-util/ninja
+    # - dev-util/pkgconf
+    # - dev-util/ragel
+    # - dev-util/re2c
+    # - dev-util/spirv-headers
+    # - dev-util/spirv-llvm-translator
+    # - dev-util/spirv-tools
+    # - dev-util/sysprof
+    # - dev-util/sysprof-capture
+    # - dev-util/sysprof-capture
+    # - dev-util/sysprof-common
+    # - dev-util/unifdef
+    # - dev-util/vulkan-headers
+    # - dev-util/wayland-scanner
+    # - dev-vcs/git
+    # - games-arcade/gnome-nibbles
+    # - games-arcade/gnome-robots
+    # - games-board/four-in-a-row
+    # - games-board/gnome-chess
+    # - games-board/gnome-mahjongg
+    # - games-board/gnome-mines
+    # - games-board/iagno
+    # - games-board/tali
+    # - games-puzzle/five-or-more
+    # - games-puzzle/gnome-klotski
+    # - games-puzzle/gnome-sudoku
+    # - games-puzzle/gnome-taquin
+    # - games-puzzle/gnome-tetravex
+    # - games-puzzle/hitori
+    # - games-puzzle/lightsoff
+    # - games-puzzle/quadrapassel
+    # - games-puzzle/swell-foop
+    # - gui-libs/display-manager-init
+    # - gui-libs/egl-gbm
+    # - gui-libs/egl-wayland
+    # - gui-libs/eglexternalplatform
+    # - gui-libs/gdk-pixbuf-loader-webp
+    # - gui-libs/gtk
+    # - gui-libs/gtksourceview
+    # - gui-libs/libadwaita
+    # - gui-libs/libhandy
+    # - gui-libs/libwpe
+    # - gui-libs/vte-common
+    # - gui-libs/wpebackend-fdo
+    # - mail-client/evolution
+    # - mail-filter/bogofilter
+    # - mail-mta/nullmailer
+    # - media-fonts/cantarell
+    # - media-fonts/encodings
+    # - media-fonts/font-util
+    # - media-fonts/liberation-fonts
+    # - media-fonts/urw-fonts
+    # - media-gfx/eog
+    # - media-gfx/exiv2
+    # - media-gfx/gnome-font-viewer
+    # - media-gfx/graphite2
+    # - media-gfx/qrencode
+    # - media-gfx/shotwell
+    # - media-libs/a52dec
+    # - media-libs/alsa-lib
+    # - media-libs/alsa-topology-conf
+    # - media-libs/alsa-ucm-conf
+    # - media-libs/clutter
+    # - media-libs/clutter-gst
+    # - media-libs/clutter-gtk
+    # - media-libs/cogl
+    # - media-libs/dav1d
+    # - media-libs/faad2
+    # - media-libs/fdk-aac
+    # - media-libs/flac
+    # - media-libs/fontconfig
+    # - media-libs/freeglut
+    # - media-libs/freetype
+    # - media-libs/gd
+    # - media-libs/gexiv2
+    # - media-libs/giflib
+    # - media-libs/glu
+    # - media-libs/graphene
+    # - media-libs/grilo
+    # - media-libs/gsound
+    # - media-libs/gst-plugins-bad
+    # - media-libs/gst-plugins-base
+    # - media-libs/gst-plugins-good
+    # - media-libs/gst-plugins-ugly
+    # - media-libs/gstreamer
+    # - media-libs/harfbuzz
+    # - media-libs/jbig2dec
+    # - media-libs/lcms
+    # - media-libs/libaom
+    # - media-libs/libass
+    # - media-libs/libcanberra
+    # - media-libs/libdca
+    # - media-libs/libdvdcss
+    # - media-libs/libdvdnav
+    # - media-libs/libdvdread
+    # - media-libs/libepoxy
+    # - media-libs/libexif
+    # - media-libs/libfreeaptx
+    # - media-libs/libglvnd
+    # - media-libs/libgphoto2
+    # - media-libs/libjpeg-turbo
+    # - media-libs/libldac
+    # - media-libs/libmad
+    # - media-libs/libmediaart
+    # - media-libs/libmng
+    # - media-libs/libmpeg2
+    # - media-libs/libogg
+    # - media-libs/libpng
+    # - media-libs/libpulse
+    # - media-libs/libraw
+    # - media-libs/libsamplerate
+    # - media-libs/libsdl
+    # - media-libs/libsdl2
+    # - media-libs/libsndfile
+    # - media-libs/libtheora
+    # - media-libs/libv4l
+    # - media-libs/libva
+    # - media-libs/libvorbis
+    # - media-libs/libvpx
+    # - media-libs/libwebp
+    # - media-libs/mesa
+    # - media-libs/openjpeg
+    # - media-libs/opus
+    # - media-libs/sbc
+    # - media-libs/speexdsp
+    # - media-libs/taglib
+    # - media-libs/tiff
+    # - media-libs/vulkan-loader
+    # - media-libs/webrtc-audio-processing
+    # - media-libs/woff2
+    # - media-libs/x264
+    # - media-libs/xvid
+    # - media-plugins/alsa-plugins
+    # - media-plugins/grilo-plugins
+    # - media-plugins/gst-plugins-a52dec
+    # - media-plugins/gst-plugins-cdparanoia
+    # - media-plugins/gst-plugins-dts
+    # - media-plugins/gst-plugins-dvdread
+    # - media-plugins/gst-plugins-faad
+    # - media-plugins/gst-plugins-flac
+    # - media-plugins/gst-plugins-gdkpixbuf
+    # - media-plugins/gst-plugins-gtk
+    # - media-plugins/gst-plugins-jpeg
+    # - media-plugins/gst-plugins-meta
+    # - media-plugins/gst-plugins-mpeg2dec
+    # - media-plugins/gst-plugins-mpg123
+    # - media-plugins/gst-plugins-opus
+    # - media-plugins/gst-plugins-pulse
+    # - media-plugins/gst-plugins-resindvd
+    # - media-plugins/gst-plugins-taglib
+    # - media-plugins/gst-plugins-v4l2
+    # - media-plugins/gst-plugins-vpx
+    # - media-plugins/gst-plugins-x264
+    # - media-sound/alsa-utils
+    # - media-sound/alsamixergui
+    # - media-sound/cdparanoia
+    # - media-sound/lame
+    # - media-sound/mpg123
+    # - media-sound/pulseaudio
+    # - media-sound/pulseaudio-daemon
+    # - media-video/cheese
+    # - media-video/ffmpeg
+    # - media-video/gnome-video-effects
+    # - media-video/mplayer
+    # - media-video/pipewire
+    # - media-video/totem
+    # - media-video/wireplumber
+    # - net-analyzer/openbsd-netcat
+    # - net-dialup/ppp
+    # - net-dialup/ppp-scripts
+    # - net-dns/c-ares
+    # - net-dns/dnsmasq
+    # - net-dns/libidn
+    # - net-dns/libidn2
+    # - net-dns/openresolv
+    # - net-firewall/ebtables
+    # - net-firewall/iptables
+    # - net-fs/cifs-utils
+    # - net-fs/samba
+    # - net-libs/glib-networking
+    # - net-libs/gnome-online-accounts
+    # - net-libs/gnutls
+    # - net-libs/gtk-vnc
+    # - net-libs/libasyncns
+    # - net-libs/libcloudproviders
+    # - net-libs/libmbim
+    # - net-libs/libmnl
+    # - net-libs/libndp
+    # - net-libs/libnma
+    # - net-libs/libnsl
+    # - net-libs/liboauth
+    # - net-libs/libproxy
+    # - net-libs/libpsl
+    # - net-libs/libqmi
+    # - net-libs/libqrtr-glib
+    # - net-libs/libslirp
+    # - net-libs/libsoup
+    # - net-libs/libtirpc
+    # - net-libs/nghttp2
+    # - net-libs/nodejs
+    # - net-libs/rest
+    # - net-libs/rpcsvc-proto
+    # - net-libs/webkit-gtk
+    # - net-libs/webkit-gtk
+    # - net-misc/chrony
+    # - net-misc/curl
+    # - net-misc/dhcpcd
+    # - net-misc/ethertypes
+    # - net-misc/iputils
+    # - net-misc/mobile-broadband-provider-info
+    # - net-misc/modemmanager
+    # - net-misc/netifrc
+    # - net-misc/networkmanager
+    # - net-misc/openssh
+    # - net-misc/radvd
+    # - net-misc/rsync
+    # - net-misc/spice-gtk
+    # - net-misc/sshpass
+    # - net-misc/wget
+    # - net-print/cups
+    # - net-print/cups-filters
+    # - net-print/cups-pk-helper
+    # - net-vpn/wireguard-tools
+    # - net-wireless/bluez
+    # - net-wireless/gnome-bluetooth
+    # - net-wireless/iw
+    # - net-wireless/wireless-regdb
+    # - net-wireless/wpa_supplicant
+    # - perl-core/Compress-Raw-Zlib
+    # - perl-core/File-Temp
+    # - perl-core/Math-BigInt
+    # - sci-geosciences/geocode-glib
+    # - sci-libs/gsl
+    # - sec-keys/openpgp-keys-gentoo-release
+    # - sys-apps/accountsservice
+    # - sys-apps/acl
+    # - sys-apps/attr
+    # - sys-apps/baobab
+    # - sys-apps/baselayout
+    # - sys-apps/bubblewrap
+    # - sys-apps/coreutils
+    # - sys-apps/dbus
+    # - sys-apps/debianutils
+    # - sys-apps/diffutils
+    # - sys-apps/dmidecode
+    # - sys-apps/dtc
+    # - sys-apps/file
+    # - sys-apps/findutils
+    # - sys-apps/gawk
+    # - sys-apps/gentoo-functions
+    # - sys-apps/gnome-disk-utility
+    # - sys-apps/grep
+    # - sys-apps/groff
+    # - sys-apps/help2man
+    # - sys-apps/hwdata
+    # - sys-apps/install-xattr
+    # - sys-apps/iproute2
+    # - sys-apps/kbd
+    # - sys-apps/keyutils
+    # - sys-apps/kmod
+    # - sys-apps/less
+    # - sys-apps/locale-gen
+    # - sys-apps/lsb-release
+    # - sys-apps/man-db
+    # - sys-apps/man-pages
+    # - sys-apps/miscfiles
+    # - sys-apps/net-tools
+    # - sys-apps/openrc
+    # - sys-apps/osinfo-db
+    # - sys-apps/osinfo-db-tools
+    # - sys-apps/pciutils
+    # - sys-apps/portage
+    # - sys-apps/sandbox
+    # - sys-apps/sed
+    # - sys-apps/shadow
+    # - sys-apps/systemd-utils
+    # - sys-apps/sysvinit
+    # - sys-apps/texinfo
+    # - sys-apps/usbredir
+    # - sys-apps/usbutils
+    # - sys-apps/util-linux
+    # - sys-apps/which
+    # - sys-apps/xdg-dbus-proxy
+    # - sys-apps/xdg-desktop-portal
+    # - sys-apps/xdg-desktop-portal-gnome
+    # - sys-apps/xdg-desktop-portal-gtk
+    # - sys-auth/elogind
+    # - sys-auth/nss-myhostname
+    # - sys-auth/pambase
+    # - sys-auth/passwdqc
+    # - sys-auth/polkit
+    # - sys-block/io-scheduler-udev-rules
+    # - sys-block/parted
+    # - sys-boot/efibootmgr
+    # - sys-boot/grub
+    # - sys-cluster/minikube
+    # - sys-devel/autoconf
+    # - sys-devel/autoconf
+    # - sys-devel/autoconf-archive
+    # - sys-devel/autoconf-wrapper
+    # - sys-devel/automake
+    # - sys-devel/automake-wrapper
+    # - sys-devel/bc
+    # - sys-devel/binutils
+    # - sys-devel/binutils-config
+    # - sys-devel/bison
+    # - sys-devel/clang
+    # - sys-devel/clang-common
+    # - sys-devel/clang-runtime
+    # - sys-devel/clang-toolchain-symlinks
+    # - sys-devel/flex
+    # - sys-devel/gcc
+    # - sys-devel/gcc
+    # - sys-devel/gcc-config
+    # - sys-devel/gettext
+    # - sys-devel/gnuconfig
+    # - sys-devel/libtool
+    # - sys-devel/lld
+    # - sys-devel/lld-toolchain-symlinks
+    # - sys-devel/llvm
+    # - sys-devel/llvm-common
+    # - sys-devel/llvm-toolchain-symlinks
+    # - sys-devel/llvmgold
+    # - sys-devel/m4
+    # - sys-devel/make
+    # - sys-devel/patch
+    # - sys-firmware/edk2-ovmf-bin
+    # - sys-firmware/ipxe
+    # - sys-firmware/seabios-bin
+    # - sys-firmware/sgabios
+    # - sys-firmware/sof-firmware
+    # - sys-fs/btrfs-progs
+    # - sys-fs/cryptsetup
+    # - sys-fs/e2fsprogs
+    # - sys-fs/fuse
+    # - sys-fs/fuse-common
+    # - sys-fs/lvm2
+    # - sys-fs/udev-init-scripts
+    # - sys-fs/udisks
+    # - sys-kernel/dracut
+    # - sys-kernel/genkernel
+    # - sys-kernel/gentoo-kernel
+    # - sys-kernel/gentoo-sources
+    # - sys-kernel/installkernel-gentoo
+    # - sys-kernel/linux-firmware
+    # - sys-kernel/linux-headers
+    # - sys-libs/binutils-libs
+    # - sys-libs/compiler-rt
+    # - sys-libs/compiler-rt-sanitizers
+    # - sys-libs/cracklib
+    # - sys-libs/efivar
+    # - sys-libs/gdbm
+    # - sys-libs/glibc
+    # - sys-libs/gpm
+    # - sys-libs/ldb
+    # - sys-libs/libblockdev
+    # - sys-libs/libcap
+    # - sys-libs/libcap-ng
+    # - sys-libs/libomp
+    # - sys-libs/libosinfo
+    # - sys-libs/libseccomp
+    # - sys-libs/libunwind
+    # - sys-libs/liburing
+    # - sys-libs/libxcrypt
+    # - sys-libs/mtdev
+    # - sys-libs/ncurses
+    # - sys-libs/pam
+    # - sys-libs/readline
+    # - sys-libs/slang
+    # - sys-libs/talloc
+    # - sys-libs/tdb
+    # - sys-libs/tevent
+    # - sys-libs/timezone-data
+    # - sys-libs/zlib
+    # - sys-power/upower
+    # - sys-process/cronbase
+    # - sys-process/cronie
+    # - sys-process/lsof
+    # - sys-process/procps
+    # - sys-process/psmisc
+    # - virtual/acl
+    # - virtual/dev-manager
+    # - virtual/dist-kernel
+    # - virtual/editor
+    # - virtual/freedesktop-icon-theme
+    # - virtual/glu
+    # - virtual/jpeg
+    # - virtual/krb5
+    # - virtual/libc
+    # - virtual/libcrypt
+    # - virtual/libelf
+    # - virtual/libiconv
+    # - virtual/libintl
+    # - virtual/libudev
+    # - virtual/libusb
+    # - virtual/linux-sources
+    # - virtual/logger
+    # - virtual/man
+    # - virtual/mta
+    # - virtual/notification-daemon
+    # - virtual/opengl
+    # - virtual/openssh
+    # - virtual/os-headers
+    # - virtual/package-manager
+    # - virtual/pager
+    # - virtual/perl-CPAN
+    # - virtual/perl-CPAN-Meta
+    # - virtual/perl-CPAN-Meta-YAML
+    # - virtual/perl-Carp
+    # - virtual/perl-Compress-Raw-Bzip2
+    # - virtual/perl-Compress-Raw-Zlib
+    # - virtual/perl-Data-Dumper
+    # - virtual/perl-Digest-MD5
+    # - virtual/perl-Digest-SHA
+    # - virtual/perl-Encode
+    # - virtual/perl-Exporter
+    # - virtual/perl-ExtUtils-CBuilder
+    # - virtual/perl-ExtUtils-Install
+    # - virtual/perl-ExtUtils-MakeMaker
+    # - virtual/perl-ExtUtils-Manifest
+    # - virtual/perl-ExtUtils-ParseXS
+    # - virtual/perl-File-Path
+    # - virtual/perl-File-Spec
+    # - virtual/perl-File-Temp
+    # - virtual/perl-Getopt-Long
+    # - virtual/perl-IO
+    # - virtual/perl-IO-Compress
+    # - virtual/perl-IO-Socket-IP
+    # - virtual/perl-JSON-PP
+    # - virtual/perl-MIME-Base64
+    # - virtual/perl-Math-BigInt
+    # - virtual/perl-Math-BigInt-FastCalc
+    # - virtual/perl-Math-BigRat
+    # - virtual/perl-Math-Complex
+    # - virtual/perl-Module-Load
+    # - virtual/perl-Module-Metadata
+    # - virtual/perl-Parse-CPAN-Meta
+    # - virtual/perl-Perl-OSType
+    # - virtual/perl-Scalar-List-Utils
+    # - virtual/perl-Test-Harness
+    # - virtual/perl-Text-ParseWords
+    # - virtual/perl-Time-HiRes
+    # - virtual/perl-Time-Local
+    # - virtual/perl-Unicode-Collate
+    # - virtual/perl-XSLoader
+    # - virtual/perl-bignum
+    # - virtual/perl-libnet
+    # - virtual/perl-parent
+    # - virtual/perl-podlators
+    # - virtual/perl-version
+    # - virtual/pkgconfig
+    # - virtual/resolvconf
+    # - virtual/ruby-ssl
+    # - virtual/rubygems
+    # - virtual/rust
+    # - virtual/secret-service
+    # - virtual/service-manager
+    # - virtual/ssh
+    # - virtual/tmpfiles
+    # - virtual/ttf-fonts
+    # - virtual/udev
+    # - virtual/w3m
+    # - www-client/epiphany
+    # - www-client/firefox
+    # - www-client/w3m
   loop_control:
     label: "{{ item }}"

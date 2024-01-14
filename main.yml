@@ -2,11 +2,31 @@
 - hosts: localhost
   vars:
     base_mount_point: "/BASE"
-  roles:
-    - role: qemu
-      tags: qemu
-    - role: base
-      tags: qemu
+    disk_marker_file: "/BASE/disk.marker"
+
+  tasks:
+    - name: Check if marker file exists
+      ansible.builtin.stat:
+        path: "{{ disk_marker_file }}"
+      register: marker
+
+    - block:
+        - name: Execute tasks in role 'qemu'
+          include_role:
+            name: qemu
+          tags: qemu
+
+        - name: Execute tasks in role 'base'
+          include_role:
+            name: base
+          tags: qemu
+
+        - name: Create marker file
+          ansible.builtin.file:
+            path: "{{ disk_marker_file }}"
+            state: touch
+
+      when: (marker.stat.exists | default(false)) == false
 
 - hosts: qemuchroot
   connection: community.general.chroot

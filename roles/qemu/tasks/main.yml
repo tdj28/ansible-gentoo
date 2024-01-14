@@ -30,6 +30,12 @@
   #when: nbd_check.rc == 1  # Run only if /dev/nbd0 is not found in lsblk
   become: yes
 
+- name: Check if EFI partition exists
+  command: sudo parted /dev/nbd0 print
+  register: parted_output
+  failed_when: false
+  changed_when: false
+
 - name: Create efi partition
   become: yes
   parted:
@@ -42,6 +48,7 @@
     part_type: primary
     flags: [ "boot", "esp" ]
     state: present
+  when: "'Warning: Error fsyncing/closing /dev/nbd0' not in parted_output.stderr"
   register: part1
 
 - name: Create boot partition
@@ -54,6 +61,7 @@
     part_end: 2GiB
     part_type: primary
     state: present
+  when: "'Warning: Error fsyncing/closing /dev/nbd0' not in parted_output.stderr"
   register: part2
 
 - name: Create primary partition
@@ -66,6 +74,7 @@
     part_end: 100%
     part_type: primary
     state: present
+  when: "'Warning: Error fsyncing/closing /dev/nbd0' not in parted_output.stderr"
   register: part3
 
 - name: Format partition 1 as fat32
@@ -73,18 +82,21 @@
   community.general.filesystem:
     fstype: vfat
     dev: /dev/nbd0p1
+  when: "'Warning: Error fsyncing/closing /dev/nbd0' not in parted_output.stderr"
 
 - name: Format partition 2 as ext4
   become: yes
   filesystem:
     fstype: ext4
     dev: /dev/nbd0p2
+  when: "'Warning: Error fsyncing/closing /dev/nbd0' not in parted_output.stderr"
 
 - name: Format partition 3 as ext4
   become: yes
   filesystem:
     fstype: ext4
     dev: /dev/nbd0p3
+  when: "'Warning: Error fsyncing/closing /dev/nbd0' not in parted_output.stderr"
 
 # - name: Setup swap
 #   become: yes
