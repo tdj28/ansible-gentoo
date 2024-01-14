@@ -77,7 +77,7 @@
     path: "{{ base_mount_point }}/proc"
     src: /proc
     fstype: proc
-    state: mounted
+    state: ephemeral
 
 - name: Mount /sys to BASE/sys
   ansible.builtin.command:

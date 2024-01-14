@@ -6,11 +6,12 @@
     cmd: mkdir -p /etc/portage/repos.conf
   become: yes
 
-# - name: Copy respos.conf to /etc/portage
-#   ansible.builtin.copy:
-#     src: /usr/share/portage/config/repos.conf
-#     dest: /etc/portage/repos.conf/gentoo.conf
-#     follow: yes
+- name: Copy respos.conf to /etc/portage
+  ansible.builtin.copy:
+    src: /usr/share/portage/config/repos.conf
+    dest: /etc/portage/repos.conf/gentoo.conf
+    remote_src: yes
+    follow: yes
 
 - name: Sync Portage tree
   ansible.builtin.command:

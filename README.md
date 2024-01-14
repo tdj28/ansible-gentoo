@@ -12,10 +12,10 @@ sudo ansible-playbook main.yml -i hosts --tags "qemu"
 ansible-galaxy init my_role
 ```
 
-## Trouble shooting
+## Troubleshooting
 
 ```
-sudo qemu-nbd -d /dev/nbd0
+sudo nbd-client -c /dev/nbd0
 ```
 
 ## References

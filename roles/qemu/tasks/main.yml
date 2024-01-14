@@ -21,12 +21,9 @@
 #   register: nbd_check
 #   failed_when: nbd_check.rc > 1  # Ignore error if /dev/nbd0 is not found (rc = 1)
 
-- name: Check if /dev/nbd0 is already connected
-  command: lsblk -l /dev/nbd0
-  register: nbd_check
-  failed_when: nbd_check.rc != 0 and nbd_check.rc != 1
-  changed_when: False
-  become: yes
+- name: Disconnect disk image from /dev/nbd0 if already connected
+  command: qemu-nbd --disconnect /dev/nbd0
+  ignore_errors: yes
 
 - name: Connect disk image to /dev/nbd0
   command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
@@ -43,7 +40,7 @@
     part_start: 1MiB
     part_end: 512MiB
     part_type: primary
-    flags: [boot, esp]
+    flags: [ "boot", "esp" ]
     state: present
   register: part1
 
@@ -68,13 +65,12 @@
     part_start: 2GiB
     part_end: 100%
     part_type: primary
-    #flags: [swap]
     state: present
   register: part3
 
-- name: Format partition 1 as vfat
+- name: Format partition 1 as fat32
   become: yes
-  filesystem:
+  community.general.filesystem:
     fstype: vfat
     dev: /dev/nbd0p1
 
@@ -141,5 +137,3 @@
     src: /dev/nbd0p2
     fstype: ext4
     state: ephemeral
-
-
