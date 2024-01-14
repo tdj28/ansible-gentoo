@@ -21,6 +21,10 @@
 #   register: nbd_check
 #   failed_when: nbd_check.rc > 1  # Ignore error if /dev/nbd0 is not found (rc = 1)
 
+- name: Disconnect disk image from /dev/nbd0 if already connected
+  command: qemu-nbd --disconnect /dev/nbd0
+  ignore_errors: yes
+
 - name: Connect disk image to /dev/nbd0
   command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
   #when: nbd_check.rc == 1  # Only run if /dev/nbd0 is not found in lsblk
@@ -36,6 +40,7 @@
     part_start: 1MiB
     part_end: 512MiB
     part_type: primary
+    flags: [ "boot", "esp" ]
     state: present
   register: part1
 
@@ -60,14 +65,14 @@
     part_start: -2GiB
     part_end: 100%
     part_type: primary
-    flags: [swap]
     state: present
   register: part3
 
-- name: Format partition 1 as ext4
+
+- name: Format partition 1 as fat32
   become: yes
-  filesystem:
-    fstype: ext4
+  community.general.filesystem:
+    fstype: vfat
     dev: /dev/nbd0p1
 
 - name: Format partition 2 as ext4
@@ -76,9 +81,11 @@
     fstype: ext4
     dev: /dev/nbd0p2
 
-- name: Setup swap
+- name: Format partition 3 as ext4
   become: yes
-  command: mkswap /dev/nbd0p3
+  filesystem:
+    fstype: ext4
+    dev: /dev/nbd0p3
 
 - name: Create BASE directory
   become: yes
@@ -88,13 +95,28 @@
     owner: "{{ ansible_user_id }}"
     mode: '0755'
 
-- name: Mount partition 2 to BASE
+- name: Mount partition 3 to BASE
   become: yes
   mount:
     path: "{{ base_mount_point }}"
-    src: /dev/nbd0p2
+    src: /dev/nbd0p3
     fstype: ext4
-    state: mounted
+    state: ephemeral
+
+- name: Create efi directory in BASE
+  become: yes
+  file:
+    path: "{{ base_mount_point }}/efi"
+    state: directory
+    mode: '0755'
+
+- name: Mount partition 1 to BASE/efi
+  become: yes
+  mount:
+    path: "{{ base_mount_point }}/efi"
+    src: /dev/nbd0p1
+    fstype: vfat
+    state: ephemeral
 
 - name: Create boot directory in BASE
   become: yes
@@ -107,6 +129,6 @@
   become: yes
   mount:
     path: "{{ base_mount_point }}/boot"
-    src: /dev/nbd0p1
+    src: /dev/nbd0p2
     fstype: ext4
-    state: mounted
+    state: ephemeral

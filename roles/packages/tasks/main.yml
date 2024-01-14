@@ -10,6 +10,7 @@
   ansible.builtin.copy:
     src: /usr/share/portage/config/repos.conf
     dest: /etc/portage/repos.conf/gentoo.conf
+    remote_src: yes
     follow: yes
 
 - name: Sync Portage tree
