@@ -85,6 +85,18 @@
     mode: 0644
   become: yes
 
+- name: Ensure /etc/portage/package.license directory exists
+  file:
+    path: /etc/portage/package.license
+    state: directory
+    mode: '0755'
+
+- name: Accept the linux-fw-redistributable license for sys-kernel/linux-firmware
+  lineinfile:
+    path: /etc/portage/package.license/linux-firmware
+    line: 'sys-kernel/linux-firmware linux-fw-redistributable'
+    create: yes
+
 - name: Ensure /etc/portage/package.accept_keywords exists
   file:
     path: /etc/portage/package.accept_keywords
@@ -92,7 +104,86 @@
     mode: 0644
   become: yes
 
-    # Add additional tasks for other Portage configuration files like package.mask, package.accept_keywords, etc.
+- name: Ensure necessary packages are installed for kernel
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - sys-kernel/gentoo-sources
+    - sys-kernel/linux-firmware
+    - sys-apps/pciutils
+    - sys-kernel/dracut
+
+# - name: Copy kernel configuration file
+#   copy:
+#     src: /path/to/local/kernel/config
+#     dest: /usr/src/linux/.config
+
+- name: Find installed kernel sources
+  find:
+    paths: "/usr/src"
+    patterns: "linux-*"
+    file_type: directory
+  register: kernel_sources
+
+- name: Get the latest kernel source directory
+  set_fact:
+    latest_kernel_dir: "{{ kernel_sources.files | sort(attribute='path') | last }}"
+
+- name: Create symlink to the latest kernel sources
+  file:
+    src: "{{ latest_kernel_dir.path }}"
+    dest: "/usr/src/linux"
+    state: link
+    force: yes
+
+- name: Prepare the kernel sources
+  command: make olddefconfig
+  args:
+    chdir: /usr/src/linux
+
+- name: Get the current kernel version
+  shell: make kernelversion
+  args:
+    chdir: /usr/src/linux
+  register: kernel_version_output
+
+- name: Set ansible_kernel variable
+  set_fact:
+    ansible_kernel: "{{ kernel_version_output.stdout }}"
+
+- name: Build and install the kernel
+  shell: |
+    make -j{{ ansible_processor_vcpus }} &&
+    make modules_install &&
+    make install
+  args:
+    chdir: /usr/src/linux
+    creates: /boot/vmlinuz-{{ ansible_kernel }}
+  become: yes
+
+# - name: Generate initial ramdisk
+#   command: genkernel --install initramfs
+#   args:
+#     chdir: /usr/src/linux
+
+- name: Generate initial ramdisk
+  command:  dracut --kver={{ ansible_kernel }}
+
+- name: Install GRUB on Gentoo
+  community.general.portage:
+    package: sys-boot/grub
+    state: present
+  become: yes
+  delegate_to: "{{ inventory_hostname }}"
+
+- name: grub-install
+  command: grub-install --efi-directory=/efi --target=x86_64-efi --bootloader-id=GentooAnsible
+
+- name: Generate GRUB configuration
+  command: grub-mkconfig -o /boot/grub/grub.cfg
+
+# Add additional tasks for other Portage configuration files like package.mask, package.accept_keywords, etc.
 
 - name: Install non-graphical packages
   include_tasks: check_and_install_packages.yml

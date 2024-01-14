@@ -27,10 +27,10 @@
 
 - name: Connect disk image to /dev/nbd0
   command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
-  #when: nbd_check.rc == 1  # Only run if /dev/nbd0 is not found in lsblk
+  when: nbd_check.rc == 1  # Run only if /dev/nbd0 is not found in lsblk
   become: yes
 
-- name: Create partitions
+- name: Create efi partition
   become: yes
   parted:
     device: /dev/nbd0
@@ -44,30 +44,29 @@
     state: present
   register: part1
 
-- name: Create extended partition
+- name: Create boot partition
   become: yes
   parted:
     device: /dev/nbd0
     number: 2
     unit: MiB
     part_start: 512MiB
-    part_end: -2GiB
+    part_end: 2GiB
     part_type: primary
     state: present
   register: part2
 
-- name: Create swap partition
+- name: Create primary partition
   become: yes
   parted:
     device: /dev/nbd0
     number: 3
     unit: MiB
-    part_start: -2GiB
+    part_start: 2GiB
     part_end: 100%
     part_type: primary
     state: present
   register: part3
-
 
 - name: Format partition 1 as fat32
   become: yes
@@ -87,6 +86,10 @@
     fstype: ext4
     dev: /dev/nbd0p3
 
+# - name: Setup swap
+#   become: yes
+#   command: mkswap /dev/nbd0p3
+
 - name: Create BASE directory
   become: yes
   file:
@@ -94,6 +97,8 @@
     state: directory
     owner: "{{ ansible_user_id }}"
     mode: '0755'
+    seuser: null
+    serole: null
 
 - name: Mount partition 3 to BASE
   become: yes
@@ -125,7 +130,7 @@
     state: directory
     mode: '0755'
 
-- name: Mount partition 1 to BASE/boot
+- name: Mount partition 2 to BASE/boot
   become: yes
   mount:
     path: "{{ base_mount_point }}/boot"
