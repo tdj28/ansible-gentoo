@@ -68,6 +68,10 @@
     state: present
   register: part3
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6dacd94 (chore: clean up mounting process)
 - name: Format partition 1 as fat32
   become: yes
   community.general.filesystem:
@@ -85,10 +89,13 @@
   filesystem:
     fstype: ext4
     dev: /dev/nbd0p3
+<<<<<<< HEAD
 
 # - name: Setup swap
 #   become: yes
 #   command: mkswap /dev/nbd0p3
+=======
+>>>>>>> 6dacd94 (chore: clean up mounting process)
 
 - name: Create BASE directory
   become: yes
