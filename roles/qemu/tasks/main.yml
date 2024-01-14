@@ -27,7 +27,7 @@
 
 - name: Connect disk image to /dev/nbd0
   command: qemu-nbd --connect=/dev/nbd0 {{ disk_image }}
-  when: nbd_check.rc == 1  # Run only if /dev/nbd0 is not found in lsblk
+  #when: nbd_check.rc == 1  # Run only if /dev/nbd0 is not found in lsblk
   become: yes
 
 - name: Create efi partition
@@ -68,10 +68,6 @@
     state: present
   register: part3
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 6dacd94 (chore: clean up mounting process)
 - name: Format partition 1 as fat32
   become: yes
   community.general.filesystem:
@@ -89,13 +85,10 @@
   filesystem:
     fstype: ext4
     dev: /dev/nbd0p3
-<<<<<<< HEAD
 
 # - name: Setup swap
 #   become: yes
 #   command: mkswap /dev/nbd0p3
-=======
->>>>>>> 6dacd94 (chore: clean up mounting process)
 
 - name: Create BASE directory
   become: yes
